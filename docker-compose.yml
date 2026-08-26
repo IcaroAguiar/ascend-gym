@@ -1,4 +1,6 @@
-name: ascend-gym
+# Keep the original Compose project identity so existing self-hosted instances update in place.
+# Product branding is independent from Docker resource names.
+name: opengym
 
 services:
   # One-time: download the exercise images + GIFs into ./media (skipped if already there).
