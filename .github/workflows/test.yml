@@ -35,7 +35,13 @@ jobs:
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: frontend/package-lock.json
+          cache-dependency-path: |
+            frontend/package-lock.json
+            api/package-lock.json
+      # Frontend Coach parity tests import the server payload and job modules, so their runtime
+      # dependencies must exist even though Vitest itself runs from frontend/.
+      - run: npm ci
+        working-directory: api
       - run: npm ci
         working-directory: frontend
       - run: npm test
@@ -53,8 +59,12 @@ jobs:
       - uses: actions/setup-node@v7
         with:
           node-version: 22
-      # No dependencies to install: the Coach tests run on node:test and drive the in-repo
-      # fixture provider, so the whole job graph works without an AI account or a network.
+          cache: npm
+          cache-dependency-path: api/package-lock.json
+      # Tests use the fixture provider, but loading the adapter graph still requires the pinned
+      # SDK packages. Installing them does not contact an AI provider or require credentials.
+      - run: npm ci
+        working-directory: api
       - run: npm test
         working-directory: api
       # The API's copy of the exercise catalogue is generated and committed. A dataset change
