@@ -1,3 +1,9 @@
+# Site histórico do upstream
+
+Este diretório foi herdado do openGym e documenta o site do autor original. Ele não representa
+o ASCEND Gym, não é publicado pelos workflows atuais e permanece apenas como material histórico
+até a criação de uma apresentação própria.
+
 # opengym.duarte-santos.ch
 
 Source of the project website — plain hand-written HTML/CSS/JS, no build step,

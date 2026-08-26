@@ -1,7 +1,7 @@
-# Contributing to openGym
+# Contributing to ASCEND Gym
 
-Thanks for taking a look! openGym is intentionally small and dependency-light, and the goal is
-to keep it that way — easy to read, easy to self-host.
+ASCEND Gym preserves openGym's small, dependency-light architecture and develops its own
+product direction in reviewable stages.
 
 ## Project layout
 
@@ -52,13 +52,13 @@ cd frontend && npm test
 
 | You have | Goes to |
 | --- | --- |
-| A question, or self-hosting that won't behave | [Discussions → Q&A](https://github.com/DuarteSantos8/openGym/discussions/categories/q-a) |
-| An idea you're not sure about yet | [Discussions → Ideas](https://github.com/DuarteSantos8/openGym/discussions/categories/ideas) |
-| A reproducible bug | [Issues](https://github.com/DuarteSantos8/openGym/issues) |
+| A question or self-hosting problem | [Open an issue](https://github.com/IcaroAguiar/ascend-gym/issues/new/choose) |
+| An idea you want to explore | [Open a feature request](https://github.com/IcaroAguiar/ascend-gym/issues/new/choose) |
+| A reproducible bug | [Open a bug report](https://github.com/IcaroAguiar/ascend-gym/issues/new/choose) |
 | A change you've already built | A pull request |
 
-An answered question in Q&A is worth more than the same answer buried in a closed issue — the
-next person searching "passkey login fails behind my reverse proxy" actually finds it.
+Use a specific title and leave the confirmed resolution in the issue. That makes a solution such
+as “passkey login fails behind my reverse proxy” discoverable to the next person.
 
 ## Reporting bugs
 

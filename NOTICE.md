@@ -3,6 +3,14 @@
 openGym — Copyright (C) 2026 Duarte Santos.
 openGym's own code is licensed under the **GNU AGPL v3.0** (see [LICENSE](LICENSE)).
 
+## ASCEND Gym modifications
+
+ASCEND Gym is a modified distribution maintained by Ícaro Aguiar. It preserves the openGym
+copyright and license notices and incorporates the AI Coach work from
+[alexpcosta/opengym](https://github.com/alexpcosta/opengym). ASCEND Gym modifications are
+distributed under the same GNU AGPL v3.0. The ASCEND name and visual identity do not replace
+or remove the authorship notices for the underlying code.
+
 ## App store exception
 
 As an additional permission under section 7 of the AGPL v3.0, the copyright holder permits
@@ -12,18 +20,21 @@ with the AGPL, provided the corresponding source code remains available under th
 the project repository. This permission applies to the distribution channel only and does
 not otherwise limit the license.
 
-## Bundled AI provider CLI
+This additional permission was granted by the original copyright holder for the upstream mobile
+application. This baseline does not assert a separate app-store exception for ASCEND Gym's own
+modifications. Review that boundary before distributing a modified mobile application through an
+app store.
 
-The api image installs the [**Claude Code CLI**](https://github.com/anthropics/claude-code)
-(`@anthropic-ai/claude-code`, pinned in `api/Dockerfile`) so the optional AI Coach works
-without the instance owner installing anything. openGym invokes it as a separate process at
-runtime and does not link against it or include its source; this is mere aggregation, and
-openGym's own AGPL v3.0 licensing is unchanged.
+## Bundled AI providers
 
-The CLI is distributed under its own terms, and using it requires an account with the
-provider. Both are matters between the instance owner and Anthropic — openGym ships no
-credentials and asks its users for none. Instances that would rather not carry it can leave
-the Coach disabled (the default) or set `COACH_DISABLED=1`.
+The API image installs the Claude Agent SDK and a pinned OpenAI Codex CLI so the optional AI
+Coach can run without a host installation. These components keep their own licenses and service
+terms. Their inclusion does not grant permission to share a personal provider account or resell
+provider access.
+
+The instance owner supplies the provider credential. ASCEND Gym ships no credential. Leave the
+Coach disabled, or set `COACH_DISABLED=1`, unless the instance owner has confirmed that the
+intended multi-user use complies with the selected provider's terms.
 
 ## Body diagram geometry
 
@@ -65,5 +76,7 @@ and animations (fetched into `media/` at build time) come from
 [**hasaneyldrm/exercises-dataset**](https://github.com/hasaneyldrm/exercises-dataset)
 and are **not** covered by openGym's AGPL license — they remain under that dataset's own terms.
 The media files are not distributed in this repository; they are downloaded from the upstream
-source on first run. If you redistribute openGym with the media included, review the upstream
-license first.
+source on first run. The dataset currently describes its code, data structure and instruction
+text as MIT-licensed, while the images and GIFs are credited to Gym Visual and require separate
+permission for reuse. Preserve the attribution and obtain the necessary media rights before a
+public or commercial redistribution. See the dataset's current `LICENSE` and `NOTICE.md`.

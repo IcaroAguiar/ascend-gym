@@ -1,6 +1,8 @@
-# Self-hosting openGym
+# Self-hosting ASCEND Gym
 
-openGym is two small containers (a web server and an API) plus a folder of your data.
+ASCEND Gym is two small application containers, an optional Cloudflare Tunnel and a folder of
+runtime data. The reference instance runs on a personal notebook and does not promise continuous
+availability. Read [OPERATIONS.md](OPERATIONS.md) before inviting users.
 This guide takes you from "just cloned it" to "using it from my phone over the internet".
 
 ## 1. Run it locally (5 minutes)
@@ -8,17 +10,15 @@ This guide takes you from "just cloned it" to "using it from my phone over the i
 Requirements: [Docker](https://docs.docker.com/get-docker/) with the Compose plugin.
 
 ```bash
-git clone https://github.com/DuarteSantos8/gym-app opengym
-cd opengym
+git clone https://github.com/IcaroAguiar/ascend-gym.git
+cd ascend-gym
 cp .env.example .env
-docker compose pull   # prebuilt images from ghcr.io (amd64 + arm64) — or skip and build from source
-docker compose up -d
+docker compose up -d --build
 ```
 
-- First start downloads the exercise images/GIFs (~140 MB) once into `app/img` and `app/gif`.
+- First start downloads the exercise images/GIFs (~140 MB) once into `media/img` and `media/gif`.
 - Open **http://localhost:8080** and create a profile with a passkey.
-- Rather build from source than pull prebuilt images? Skip `docker compose pull` and run
-  `docker compose up -d --build` instead — no Node needed locally either way.
+- Docker builds the application from source; Node is not required on the host.
 
 Check it's healthy:
 
@@ -49,8 +49,14 @@ the `web` container. Pick whichever you already run:
 
 ### Option A — Cloudflare Tunnel (no open ports)
 
-1. Create a tunnel and route `gym.example.com` → `http://<docker-host>:8080`.
-2. Cloudflare gives you HTTPS automatically.
+1. Create a named tunnel and keep its credentials in the gitignored `./cloudflared` directory.
+2. Configure the ingress origin as `http://web:80`, using the Compose service name rather than
+   host networking.
+3. Add `COMPOSE_PROFILES=public-tunnel` to `.env` and run `docker compose up -d --build`.
+4. Cloudflare terminates HTTPS; the app port remains bound to `127.0.0.1`.
+
+The Tunnel metrics are published only at `127.0.0.1:20241`. Do not commit `config.yml`, the
+credential JSON or certificate files.
 
 ### Option B — Caddy (automatic Let's Encrypt)
 
@@ -72,7 +78,7 @@ Then set your domain in `.env` and restart:
 RP_ID=gym.example.com
 ORIGIN=https://gym.example.com
 WEB_PORT=8080
-RP_NAME=openGym
+RP_NAME=ASCEND Gym
 ```
 
 ```bash
@@ -137,18 +143,10 @@ refuses the lock while the phone is in Low Power Mode.
 
 ## 7. Updating
 
-Running prebuilt images:
+ASCEND Gym currently builds from source:
 
 ```bash
-git pull                    # picks up compose/config changes
-docker compose pull
-docker compose up -d
-```
-
-Building from source instead:
-
-```bash
-git pull
+git pull --ff-only
 docker compose up -d --build
 ```
 

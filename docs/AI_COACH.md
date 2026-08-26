@@ -1,6 +1,6 @@
 # The AI Coach
 
-The feature this fork adds to [openGym](https://github.com/DuarteSantos8/openGym): an optional AI
+The feature inherited from [alexpcosta/opengym](https://github.com/alexpcosta/opengym): an optional AI
 that **designs** your training plan and **revises it from what you actually log** — running as a
 CLI on your own server, under your own provider account, off until an admin turns it on.
 
@@ -36,7 +36,8 @@ provider dies, the engine carries on offline without skipping a beat.
 
 ## Principles
 
-- **Your box, your data.** The provider runs locally; openGym ships no bundled API keys.
+- **Your box, your runtime.** The provider client runs locally and openGym ships no bundled API
+  keys. The selected payload may still be processed by the remote provider.
 - **Opt in twice.** An admin enables the feature; each profile consents separately before any of
   its data is used.
 - **Approval required.** Proposals are inert until you tap Apply, one change at a time.

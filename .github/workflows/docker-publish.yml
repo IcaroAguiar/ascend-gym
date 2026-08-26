@@ -1,9 +1,6 @@
-name: Publish Docker images
+name: Publish Docker images (manual)
 
 on:
-  push:
-    branches: [main]
-    tags: ['v*']
   workflow_dispatch:
 
 permissions:
@@ -41,7 +38,7 @@ jobs:
       - uses: docker/metadata-action@v6
         id: meta
         with:
-          images: ghcr.io/${{ steps.repo.outputs.owner }}/opengym-${{ matrix.image }}
+          images: ghcr.io/${{ steps.repo.outputs.owner }}/ascend-gym-${{ matrix.image }}
           tags: |
             type=raw,value=latest,enable={{is_default_branch}}
             type=semver,pattern={{version}}
@@ -51,6 +48,8 @@ jobs:
         with:
           context: ${{ matrix.context }}
           file: ${{ matrix.file }}
+          build-args: |
+            VITE_SOURCE_URL=https://github.com/${{ github.repository }}/tree/${{ github.sha }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ steps.meta.outputs.tags }}

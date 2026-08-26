@@ -8,7 +8,7 @@ import { webauthnOK, passkeyLogin, passkeyRegister, IS_ANDROID } from '../lib/ap
 import { pushSupported, enablePush, disablePush, sendTestPush } from '../lib/push.js'
 import { wakeLockSupported } from '../lib/wakelock.js'
 import { t, LANGS, INSTR_LANGS } from '../lib/i18n.js'
-import { DEMO, REPO } from '../lib/demo.js'
+import { DEMO, REPO, SOURCE } from '../lib/demo.js'
 import { MOBILE, shareExport, syncReminder } from '../lib/mobile.js'
 import { loadStarterPlan, confirmSheet, importFromApp } from '../sheets.jsx'
 import { coachAvailable, hasConsent } from '../lib/coach.js'
@@ -210,8 +210,10 @@ export default function Settings() {
     </Section>}
 
     <div className="dim small" style={{ textAlign: 'center', marginTop: 4, lineHeight: 1.6 }}>
-      openGym · {t('free & open source (AGPL v3)')}<br />
-      <a href="https://github.com/DuarteSantos8/openGym" target="_blank" rel="noopener">source code</a> · exercise data: hasaneyldrm/exercises-dataset (CC)
+      ASCEND Gym · {t('free & open source (AGPL v3)')}<br />
+      <a href={SOURCE} target="_blank" rel="noopener">{t('Source code')}</a> ·{' '}
+      <a href="https://github.com/alexpcosta/opengym" target="_blank" rel="noopener">{t('Based on openGym')}</a><br />
+      <a href={`${REPO}/blob/main/NOTICE.md`} target="_blank" rel="noopener">{t('Third-party notices')}</a>
     </div>
   </div>
 }

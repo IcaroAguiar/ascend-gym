@@ -5,6 +5,12 @@ media/gif/
 # Runtime data — users, passkeys, per-user state, session secret
 data/
 
+# Local backups may contain every user's data and provider credentials
+backups/
+
+# Cloudflare Tunnel configuration and credentials belong only to the host
+cloudflared/
+
 # Local config
 .env
 
@@ -18,5 +24,4 @@ node_modules/
 .claude/
 .codex/
 CLAUDE.md
-AGENTS.md
 graphify-out/

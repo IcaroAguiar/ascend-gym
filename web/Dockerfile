@@ -12,6 +12,8 @@ WORKDIR /app
 COPY frontend/package.json frontend/package-lock.json* ./
 RUN npm ci 2>/dev/null || npm install
 COPY frontend/ ./
+ARG VITE_SOURCE_URL
+ENV VITE_SOURCE_URL=$VITE_SOURCE_URL
 RUN npm run build
 
 FROM nginx:alpine

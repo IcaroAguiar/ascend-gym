@@ -1,26 +1,26 @@
 # Security policy
 
-openGym is a self-hosted app: you run the server, you hold the data. This file says which
-versions get fixes, how to report something privately, and — the part most people actually
-need — what the app protects you from and what it doesn't.
+ASCEND Gym is a modified, self-hosted distribution of openGym. The current hosted instance is
+a best-effort private beta on a personal notebook and home internet connection. It has no uptime
+or response-time SLA.
 
 ## Supported versions
 
-Only the **latest release**. Releases are semver tags (`v1.0.0` → `v1.2.3`, see
-[CHANGELOG.md](CHANGELOG.md)); there is no LTS or maintenance branch and older tags are never
-patched. A fix ships in the next release and in the `latest` images on ghcr.io.
+Only the current `main` branch is supported during the private beta. ASCEND Gym has not published
+its own stable release or public container image yet. Historical openGym tags remain in the Git
+history and do not represent a support commitment from ASCEND Gym.
 
 Updating a self-hosted instance:
 
 ```bash
-git pull && docker compose pull && docker compose up -d
+git pull --ff-only && docker compose up -d --build
 ```
 
 ## Reporting a vulnerability
 
 Use GitHub's private vulnerability reporting — repo **Security** tab → **Report a vulnerability**:
 
-<https://github.com/DuarteSantos8/openGym/security/advisories/new>
+<https://github.com/IcaroAguiar/ascend-gym/security/advisories/new>
 
 > Private reporting has to be switched on in the repository settings for that link to work
 > (Settings → Advanced Security → Private vulnerability reporting). If it 404s, open a normal
@@ -35,11 +35,8 @@ Useful in a report: the version or commit, whether you're running the prebuilt i
 source build, your `RP_ID`/`ORIGIN` and what sits in front of the app, steps to reproduce, and
 what an attacker gets out of it.
 
-**On response times:** this is a hobby project maintained by one person alongside school. There
-is no SLA and no bounty. Expect days rather than hours, and longer during exam periods. If a
-week goes by with no reply, comment on the advisory thread — it's more likely to be a missed
-notification than a decision. If a report goes unfixed and you want to disclose publicly, say so
-in the thread; there's no objection, and no request to sit on it indefinitely.
+**On response times:** this is a personal, best-effort project. There is no SLA or bounty.
+Maintenance, a power or internet outage, and work on the host may interrupt the service.
 
 ## In scope
 
@@ -50,7 +47,7 @@ in the thread; there's no objection, and no request to sit on it indefinitely.
   change a signed-in user's data.
 - **Shipped deployment config** — `docker-compose.yml`, `web/nginx.conf`, the two Dockerfiles:
   a default that exposes something a self-hoster wouldn't expect to be exposed.
-- **The published images** `ghcr.io/duartesantos8/opengym-api` and `-web`.
+- Public container images, if and when ASCEND Gym starts publishing them.
 
 ## Out of scope
 

@@ -1,8 +1,9 @@
-name: opengym
+name: ascend-gym
 
 services:
   # One-time: download the exercise images + GIFs into ./media (skipped if already there).
-  # ~140 MB, from github.com/hasaneyldrm/exercises-dataset (CC).
+  # ~140 MB, from github.com/hasaneyldrm/exercises-dataset.
+  # The media has separate Gym Visual terms; see NOTICE.md before redistribution.
   media:
     image: alpine/git
     volumes:
@@ -22,9 +23,8 @@ services:
     restart: "no"
 
   # Passkey auth + per-user data (Node, no framework).
-  # image: prebuilt (docker compose pull). build: from source (docker compose up --build).
+  # ASCEND Gym currently builds from source; no public prebuilt image is promised.
   api:
-    image: ghcr.io/duartesantos8/opengym-api:latest
     build: ./api
     restart: unless-stopped
     env_file: .env
@@ -41,10 +41,11 @@ services:
   # Builds the React frontend (multi-stage) and serves it, proxying /api → api
   # and the exercise media from the shared volume. Single origin for passkeys.
   web:
-    image: ghcr.io/duartesantos8/opengym-web:latest
     build:
       context: .
       dockerfile: web/Dockerfile
+      args:
+        VITE_SOURCE_URL: ${SOURCE_CODE_URL:-https://github.com/IcaroAguiar/ascend-gym}
     restart: unless-stopped
     depends_on:
       media:
@@ -52,7 +53,24 @@ services:
       api:
         condition: service_started
     ports:
-      - "${WEB_PORT:-8080}:80"
+      - "${WEB_BIND:-127.0.0.1}:${WEB_PORT:-8080}:80"
     volumes:
       - ./media/img:/usr/share/nginx/html/img:ro
       - ./media/gif:/usr/share/nginx/html/gif:ro
+
+  # Outbound-only Cloudflare Tunnel; no application port is opened on the router.
+  # The host-only ./cloudflared directory is gitignored because it contains credentials.
+  cloudflared:
+    profiles: ["public-tunnel"]
+    image: cloudflare/cloudflared@sha256:0aa26e284f05e6c77ae375b8c9c11d9eb6a448fb7bcd8d40f31cb6176189eb38
+    restart: unless-stopped
+    depends_on:
+      web:
+        condition: service_started
+    environment:
+      - TUNNEL_EDGE_IP_VERSION=4
+    command: ["--metrics", "0.0.0.0:20241", "tunnel", "--config", "/home/nonroot/.cloudflared/config.yml", "run"]
+    ports:
+      - "127.0.0.1:20241:20241"
+    volumes:
+      - ./cloudflared:/home/nonroot/.cloudflared:ro
