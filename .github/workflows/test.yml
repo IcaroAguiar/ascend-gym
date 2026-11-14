@@ -36,27 +36,59 @@ jobs:
     permissions:
       contents: read
       pull-requests: read # lists the PRs that contain a pushed commit
-      checks: read # reads the PR's verify result
+      actions: read # reads the pull-request workflow runs and their jobs
     steps:
       - run: echo "START=$(date +%s)" >> "$GITHUB_ENV"
+      # A pull request tests its own head commit, not the synthetic merge: the run's head_sha is then
+      # the tested commit, which is what lets main compare trees reliably. A head that is behind
+      # main simply never matches, so main runs everything.
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - name: Gate (push to main only)
         id: gate
         if: github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
+        # Skipping needs proof that a pull_request run of this very workflow file, in this repository,
+        # passed `verify` on a head whose tree is the pushed tree. Check and status names are not
+        # proof: any workflow can create a check called `verify`. Any API error or doubt, and every
+        # fork, leaves skip=false so the whole job runs; the step itself always succeeds.
         run: |
-          tree=$(git rev-parse "$GITHUB_SHA^{tree}")
-          echo "skip=false" >> "$GITHUB_OUTPUT"
-          for head in $(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" --jq '.[].head.sha'); do
-            head_tree=$(gh api "repos/$GITHUB_REPOSITORY/git/commits/$head" --jq .tree.sha)
-            passed=$(gh api "repos/$GITHUB_REPOSITORY/commits/$head/check-runs" --jq '[.check_runs[] | select(.name == "verify" and .conclusion == "success")] | length')
-            if [ "$head_tree" = "$tree" ] && [ "$passed" -gt 0 ]; then
-              echo "Tree $tree was verified on PR head $head: nothing to rerun."
-              echo "skip=true" >> "$GITHUB_OUTPUT"
-              break
-            fi
-          done
+          set -o pipefail
+          repo="$GITHUB_REPOSITORY"
+          workflow=".github/workflows/test.yml"
+
+          verified_tree() {
+            local tree head head_tree run_ids run_id passed
+            tree=$(git rev-parse "$GITHUB_SHA^{tree}") || return 1
+            local heads
+            heads=$(gh api --paginate "repos/$repo/commits/$GITHUB_SHA/pulls" \
+              | jq -r --arg repo "$repo" '.[] | select(.head.repo.full_name == $repo) | .head.sha') || return 1
+            for head in $heads; do
+              head_tree=$(gh api "repos/$repo/git/commits/$head" --jq .tree.sha) || return 1
+              [ "$head_tree" = "$tree" ] || continue
+              run_ids=$(gh api "repos/$repo/actions/workflows/test.yml/runs?event=pull_request&head_sha=$head&status=success&per_page=100" \
+                | jq -r --arg repo "$repo" --arg path "$workflow" --arg head "$head" \
+                  '.workflow_runs[] | select(.path == $path and .event == "pull_request" and .head_sha == $head and .conclusion == "success" and .repository.full_name == $repo and .head_repository.full_name == $repo) | .id') || return 1
+              for run_id in $run_ids; do
+                passed=$(gh api "repos/$repo/actions/runs/$run_id/jobs?per_page=100" \
+                  | jq '[.jobs[] | select(.name == "verify" and .conclusion == "success")] | length') || return 1
+                if [ "$passed" -gt 0 ]; then
+                  echo "Tree $tree was verified by run $run_id on PR head $head: nothing to rerun."
+                  return 0
+                fi
+              done
+            done
+            return 1
+          }
+
+          if verified_tree; then
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "No proof of an earlier verification: running everything."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
       # node:22-alpine in web/Dockerfile and api/Dockerfile — CI must match production.
       - uses: actions/setup-node@v7
         if: steps.gate.outputs.skip != 'true'
