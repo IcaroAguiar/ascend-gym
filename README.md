@@ -126,9 +126,9 @@ de modificar o projeto.
 
 ## Publicação
 
-Os workflows de imagens Docker e GitHub Pages são exclusivamente manuais. Um push para `main`
-roda os testes, mas não publica artefatos nem altera a instância hospedada. Deploy, migração de
-dados e divulgação exigem decisões separadas.
+Os workflows de imagens Docker e GitHub Pages são exclusivamente manuais. Os testes rodam no
+pull request, não no push para `main`, e nada publica artefatos nem altera a instância hospedada.
+Deploy, migração de dados e divulgação exigem decisões separadas.
 
 ## Limites atuais
 
